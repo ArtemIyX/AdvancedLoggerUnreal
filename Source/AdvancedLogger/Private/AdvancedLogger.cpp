@@ -2,6 +2,8 @@
 
 #include "AdvancedLogger.h"
 
+DEFINE_LOG_CATEGORY(LogAdvanced);
+
 #define LOCTEXT_NAMESPACE "FAdvancedLoggerModule"
 
 void FAdvancedLoggerModule::StartupModule()
