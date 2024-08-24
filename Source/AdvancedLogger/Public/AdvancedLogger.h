@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+
 class FAdvancedLoggerModule : public IModuleInterface
 {
 public:
