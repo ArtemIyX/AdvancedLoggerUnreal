@@ -4,6 +4,7 @@
 #include "Subsystems/LoggerSubsystem.h"
 
 #include "AdvancedLogger.h"
+#include "LoggerSettings.h"
 
 void ULoggerSubsystem::SetConsoleColor(EConsoleColor InColor)
 {
@@ -63,53 +64,61 @@ void ULoggerSubsystem::SetConsoleColor(EConsoleColor InColor)
 	}
 }
 
+const ULoggerSettings* ULoggerSubsystem::GetSettings() const
+{
+	return GetDefault<ULoggerSettings>();
+}
+
 void ULoggerSubsystem::Log(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
                            bool bConsoleLog)
 {
-	//TODO: Color to settings
-	ScreenMessage(InContextObject, InMessage, InKey, FColor::Purple, InTime);
+	const ULoggerSettings* settings = GetSettings();
+
+	ScreenMessage(InContextObject, InMessage, InKey, settings->Log.ScreenColor, InTime);
 
 	if (bConsoleLog)
 	{
-		//TODO: Console color to settings
-		ConsoleLog(InContextObject, InMessage, EConsoleColor::COLOR_NONE);
+		ConsoleLog(InContextObject, InMessage, settings->Log.ConsoleColor);
 	}
 }
 
 void ULoggerSubsystem::Warning(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
                                bool bConsoleLog)
 {
-	//TODO: Color to settings
-	ScreenMessage(InContextObject, InMessage, InKey, FColor::Yellow, InTime);
+	const ULoggerSettings* settings = GetSettings();
+
+	ScreenMessage(InContextObject, FString::Printf(TEXT("*WRN* %s"), *InMessage), InKey, settings->Warn.ScreenColor,
+	              InTime);
 
 	if (bConsoleLog)
 	{
-		//TODO: Console color to settings
-		ConsoleLog(InContextObject, InMessage, EConsoleColor::COLOR_YELLOW);
+		ConsoleLog(InContextObject, InMessage, settings->Warn.ConsoleColor);
 	}
 }
 
 void ULoggerSubsystem::Error(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
                              bool bConsoleLog)
 {
-	//TODO: Color to settings
-	ScreenMessage(InContextObject, InMessage, InKey, FColor::Red, InTime);
+	const ULoggerSettings* settings = GetSettings();
+
+	ScreenMessage(InContextObject, FString::Printf(TEXT("*ERR* %s"), *InMessage),
+	              InKey, settings->Error.ScreenColor, InTime);
 
 	if (bConsoleLog)
 	{
-		//TODO: Console color to settings
-		ConsoleLog(InContextObject, InMessage, EConsoleColor::COLOR_RED);
+		ConsoleLog(InContextObject, InMessage, settings->Error.ConsoleColor);
 	}
 }
 
-void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InMessage, int32 InKey, FColor InColor,
+void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InMessage, int32 InKey,
+                                     FLinearColor InColor,
                                      float InTime)
 {
 	FString contextString = IsValid(InContextObject)
 		                        ? FString::Printf(TEXT("%s:"), *InContextObject->GetClass()->GetFName().ToString())
 		                        : TEXT("");
 
-	GEngine->AddOnScreenDebugMessage(InKey, InTime, InColor,
+	GEngine->AddOnScreenDebugMessage(InKey, InTime, InColor.ToFColor(true),
 	                                 FString::Printf(TEXT("[%s] %s"), *contextString, *InMessage));
 }
 
@@ -127,7 +136,7 @@ void ULoggerSubsystem::ConsoleLog(const UObject* InContextObject, FString InMess
 		                        ? FString::Printf(TEXT("%s:"), *InContextObject->GetClass()->GetFName().ToString())
 		                        : TEXT("");
 	FString netMode = FString(NETMODE_WORLD);
-	UE_LOG(LogAdvanced, Log, TEXT("[%s] %s %s"),
+	UE_LOG(LogAdvanced, Log, TEXT("%s %s %s"),
 	       *netMode,
 	       *contextString,
 	       *InMessage

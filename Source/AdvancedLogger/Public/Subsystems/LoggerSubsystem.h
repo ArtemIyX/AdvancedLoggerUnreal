@@ -127,8 +127,6 @@ UCLASS(Blueprintable, BlueprintType)
 class ADVANCEDLOGGER_API ULoggerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
-protected:
 	
 protected:
 	/**
@@ -138,6 +136,11 @@ protected:
 	*/
 	virtual void SetConsoleColor(EConsoleColor InColor = EConsoleColor::COLOR_NONE);
 
+	/**
+	* @brief Gets default object for ULoggerSettings
+	* @see ULoggerSettings
+	*/
+	virtual const class ULoggerSettings* GetSettings() const;
 public:
 
 	/**
@@ -149,7 +152,7 @@ public:
 	 * @param InTime The duration the message stays on the screen. Defaults to 5.0f seconds.
 	 * @param bConsoleLog If true, logs the message to the console as well. Defaults to false.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject))
+	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject, Keywords="Log Logger Print String Text Console"))
 	virtual void Log(const UObject* InContextObject,
 	                 FString InMessage = TEXT("Log Message"),
 	                 int32 InKey = 1,
@@ -165,7 +168,7 @@ public:
 	 * @param InTime The duration the message stays on the screen. Defaults to 5.0f seconds.
 	 * @param bConsoleLog If true, logs the warning message to the console as well. Defaults to false.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject))
+	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject, Keywords="Warn Warning Logger Print String Text Console"))
 	virtual void Warning(const UObject* InContextObject,
 	                     FString InMessage = TEXT("Warning Message"),
 	                     int32 InKey = 2,
@@ -180,7 +183,7 @@ public:
 	* @param InTime The duration the message stays on the screen. Defaults to 5.0f seconds.
 	* @param bConsoleLog If true, logs the error message to the console as well. Defaults to false.
 	*/
-	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject))
+	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject, Keywords="Err Error Logger Print String Text Console"))
 	virtual void Error(const UObject* InContextObject,
 	                   FString InMessage = TEXT("Error Message"),
 	                   int32 InKey = 3,
@@ -196,11 +199,11 @@ public:
 	 * @param InColor The color of the on-screen message. Defaults to white (FColor(255, 255, 255, 255)).
 	 * @param InTime The duration the message stays on the screen. Defaults to 5.0f seconds.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject))
+	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject, Keywords="Log Logger Screen Message Print String Text Console"))
 	virtual void ScreenMessage(const UObject* InContextObject,
 	                           FString InMessage = FString(TEXT("Screen message")),
 	                           int32 InKey = 1,
-	                           FColor InColor = FColor(255, 255, 255, 255),
+	                           FLinearColor InColor = FLinearColor(255, 255, 255, 255),
 	                           float InTime = 5.0f);
 
 	/**
@@ -210,7 +213,7 @@ public:
 	 * @param InMessage The message to log to the console. Defaults to "Console message".
 	 * @param InColor The color of the console message. Defaults to EConsoleColor::COLOR_NONE.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject))
+	UFUNCTION(BlueprintCallable, meta=(WorldContext=InContextObject, Keywords="Console Log Logger Screen Message Print String Text"))
 	virtual void ConsoleLog(const UObject* InContextObject,
 	                        FString InMessage = FString(TEXT("Console message")),
 	                        EConsoleColor InColor = EConsoleColor::COLOR_NONE);
