@@ -15,7 +15,9 @@ FLoggerCategorySettings::FLoggerCategorySettings(const FColor& InScreenColor, EC
 	ConsoleColor = InConsoleColor;
 }
 
-ULoggerSettings::ULoggerSettings(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+ULoggerSettings::ULoggerSettings(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
+	ScreenLog(false),
+	ConsoleLog(false)
 {
 	Log = FLoggerCategorySettings(FColor::Blue, EConsoleColor::COLOR_NONE);
 	Warn = FLoggerCategorySettings(FColor::Yellow, EConsoleColor::COLOR_YELLOW);

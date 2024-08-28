@@ -114,6 +114,15 @@ void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InM
                                      FLinearColor InColor,
                                      float InTime)
 {
+	const ULoggerSettings* settings = GetSettings();
+	bool bCanScreenLog = true;
+#if NO_LOGGING
+	bCanScreenLog = settings->ScreenLog;
+#endif
+
+	if (!bCanScreenLog)
+		return;
+
 	FString contextString = IsValid(InContextObject)
 		                        ? FString::Printf(TEXT("%s:"), *InContextObject->GetClass()->GetFName().ToString())
 		                        : TEXT("");
@@ -124,6 +133,16 @@ void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InM
 
 void ULoggerSubsystem::ConsoleLog(const UObject* InContextObject, FString InMessage, EConsoleColor InColor)
 {
+	const ULoggerSettings* settings = GetSettings();
+	bool bCanConsoleLog = true;
+
+#if NO_LOGGING
+	bCanConsoleLog = settings->ConsoleLog;
+#endif
+
+	if (!bCanConsoleLog)
+		return;
+
 	if (InColor == EConsoleColor::COLOR_NONE)
 	{
 		CLEAR_WARN_COLOR();

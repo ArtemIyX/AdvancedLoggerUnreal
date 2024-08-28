@@ -71,6 +71,21 @@ public:
 	ULoggerSettings(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 public:
+
+	/**
+	 * @brief Should the screen logs remain in the 'NO_LOGGING' build?
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Config, Category="Build",
+		meta=(ShowOnlyInnerProperties))
+	bool bScreenLog;
+
+	/**
+	 * @brief Should the console logs remain in the 'NO_LOGGING' build?
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Config, Category="Build",
+		meta=(ShowOnlyInnerProperties))
+	bool bConsoleLog;
+	
 	/**
 	 * @brief Settings for the Log category.
 	 */
