@@ -14,7 +14,7 @@
  * for different logger categories when displayed on the screen and in the console.
  */
 USTRUCT(Blueprintable, BlueprintType)
-struct FLoggerCategorySettings
+struct ADVANCEDLOGGER_API FLoggerCategorySettings
 {
 	GENERATED_BODY()
 
