@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
-#include "Subsystems/LoggerSubsystem.h"
+#include "Subsystems/LoggerLib.h"
 #include "LoggerSettings.generated.h"
 
 /**

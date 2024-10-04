@@ -1,12 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Subsystems/LoggerSubsystem.h"
+#include "Subsystems/LoggerLib.h"
 
 #include "AdvancedLogger.h"
 #include "LoggerSettings.h"
 
-void ULoggerSubsystem::SetConsoleColor(EConsoleColor InColor)
+void ULoggerLib::SetConsoleColor(EConsoleColor InColor)
 {
 	switch (InColor)
 	{
@@ -64,12 +64,12 @@ void ULoggerSubsystem::SetConsoleColor(EConsoleColor InColor)
 	}
 }
 
-const ULoggerSettings* ULoggerSubsystem::GetSettings() const
+const ULoggerSettings* ULoggerLib::GetSettings()
 {
 	return GetDefault<ULoggerSettings>();
 }
 
-FString ULoggerSubsystem::MakeSidePrefix(UWorld* InWorld) const
+FString ULoggerLib::MakeSidePrefix(UWorld* InWorld)
 {
 	FString Prefix;
 	if (InWorld)
@@ -96,8 +96,8 @@ FString ULoggerSubsystem::MakeSidePrefix(UWorld* InWorld) const
 	return Prefix;
 }
 
-void ULoggerSubsystem::Log(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
-                           bool bConsoleLog)
+void ULoggerLib::Log(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
+                     bool bConsoleLog)
 {
 	const ULoggerSettings* settings = GetSettings();
 
@@ -116,8 +116,33 @@ void ULoggerSubsystem::Log(const UObject* InContextObject, FString InMessage, in
 	}
 }
 
-void ULoggerSubsystem::Warning(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
-                               bool bConsoleLog)
+void ULoggerLib::LogStatic(FString InMessage, int32 InKey, float InTime, bool bConsoleLog)
+{
+	ULoggerLib::Log(nullptr, InMessage, InKey, InTime, bConsoleLog);
+}
+
+void ULoggerLib::WarningStatic(FString InMessage, int32 InKey, float InTime, bool bConsoleLog)
+{
+	ULoggerLib::Warning(nullptr, InMessage, InKey, InTime, bConsoleLog);
+}
+
+void ULoggerLib::ErrorStatic(FString InMessage, int32 InKey, float InTime, bool bConsoleLog)
+{
+	ULoggerLib::Error(nullptr, InMessage, InKey, InTime, bConsoleLog);
+}
+
+void ULoggerLib::ScreenMessageStatic(FString InMessage, int32 InKey, FLinearColor InColor, float InTime)
+{
+	ULoggerLib::ScreenMessage(nullptr, InMessage, InKey, InColor, InTime);
+}
+
+void ULoggerLib::ConsoleLogStatic(FString InMessage, EConsoleColor InColor)
+{
+	ULoggerLib::ConsoleLog(nullptr, InMessage, InColor);
+}
+
+void ULoggerLib::Warning(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
+                         bool bConsoleLog)
 {
 	const ULoggerSettings* settings = GetSettings();
 
@@ -140,8 +165,8 @@ void ULoggerSubsystem::Warning(const UObject* InContextObject, FString InMessage
 	}
 }
 
-void ULoggerSubsystem::Error(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
-                             bool bConsoleLog)
+void ULoggerLib::Error(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
+                       bool bConsoleLog)
 {
 	const ULoggerSettings* settings = GetSettings();
 	if (UWorld* World = GEngine->GetWorldFromContextObject(InContextObject, EGetWorldErrorMode::ReturnNull))
@@ -161,14 +186,14 @@ void ULoggerSubsystem::Error(const UObject* InContextObject, FString InMessage, 
 	}
 }
 
-void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InMessage, int32 InKey,
-                                     FLinearColor InColor,
-                                     float InTime)
+void ULoggerLib::ScreenMessage(const UObject* InContextObject, FString InMessage, int32 InKey,
+                               FLinearColor InColor,
+                               float InTime)
 {
 	const ULoggerSettings* settings = GetSettings();
 	bool bCanScreenLog = true;
 #if NO_LOGGING
-	bCanScreenLog = settings->ScreenLog;
+	bCanScreenLog = settings->bScreenLog;
 #endif
 
 	if (!bCanScreenLog)
@@ -182,13 +207,13 @@ void ULoggerSubsystem::ScreenMessage(const UObject* InContextObject, FString InM
 	                                 FString::Printf(TEXT("[%s] %s"), *contextString, *InMessage));
 }
 
-void ULoggerSubsystem::ConsoleLog(const UObject* InContextObject, FString InMessage, EConsoleColor InColor)
+void ULoggerLib::ConsoleLog(const UObject* InContextObject, FString InMessage, EConsoleColor InColor)
 {
 	const ULoggerSettings* settings = GetSettings();
 	bool bCanConsoleLog = true;
 
 #if NO_LOGGING
-	bCanConsoleLog = settings->ConsoleLog;
+	bCanConsoleLog = settings->bConsoleLog;
 #endif
 
 	if (!bCanConsoleLog)
@@ -205,7 +230,8 @@ void ULoggerSubsystem::ConsoleLog(const UObject* InContextObject, FString InMess
 	FString contextString = IsValid(InContextObject)
 		                        ? FString::Printf(TEXT("%s:"), *InContextObject->GetClass()->GetFName().ToString())
 		                        : TEXT("");
-	FString netMode = FString(NETMODE_WORLD);
+	auto world = GEngine->GetWorldFromContextObject(InContextObject, EGetWorldErrorMode::ReturnNull);
+	FString netMode = FString(NETMODE(world));
 	UE_LOG(LogAdvanced, Log, TEXT("%s %s %s"),
 	       *netMode,
 	       *contextString,
