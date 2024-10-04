@@ -69,12 +69,46 @@ const ULoggerSettings* ULoggerSubsystem::GetSettings() const
 	return GetDefault<ULoggerSettings>();
 }
 
+FString ULoggerSubsystem::MakeSidePrefix(UWorld* InWorld) const
+{
+	FString Prefix;
+	if (InWorld)
+	{
+		if (InWorld->WorldType == EWorldType::PIE)
+		{
+			switch (InWorld->GetNetMode())
+			{
+			case NM_Client:
+				// GPlayInEditorID 0 is always the server, so 1 will be first client.
+				Prefix = FString::Printf(TEXT("Client %d: "), static_cast<int32>(GPlayInEditorID));
+				break;
+			case NM_DedicatedServer:
+			case NM_ListenServer:
+				Prefix = FString::Printf(TEXT("Server: "));
+				break;
+			case NM_Standalone:
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	return Prefix;
+}
+
 void ULoggerSubsystem::Log(const UObject* InContextObject, FString InMessage, int32 InKey, float InTime,
                            bool bConsoleLog)
 {
 	const ULoggerSettings* settings = GetSettings();
 
-	ScreenMessage(InContextObject, InMessage, InKey, settings->Log.ScreenColor, InTime);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(InContextObject, EGetWorldErrorMode::ReturnNull))
+	{
+		ScreenMessage(InContextObject, MakeSidePrefix(World) + InMessage, InKey, settings->Log.ScreenColor, InTime);
+	}
+	else
+	{
+		ScreenMessage(InContextObject, InMessage, InKey, settings->Log.ScreenColor, InTime);
+	}
 
 	if (bConsoleLog)
 	{
@@ -87,8 +121,18 @@ void ULoggerSubsystem::Warning(const UObject* InContextObject, FString InMessage
 {
 	const ULoggerSettings* settings = GetSettings();
 
-	ScreenMessage(InContextObject, FString::Printf(TEXT("*WRN* %s"), *InMessage), InKey, settings->Warn.ScreenColor,
-	              InTime);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(InContextObject, EGetWorldErrorMode::ReturnNull))
+	{
+		ScreenMessage(InContextObject, MakeSidePrefix(World) + FString::Printf(TEXT("*WRN* %s"), *InMessage), InKey,
+		              settings->Warn.ScreenColor,
+		              InTime);
+	}
+	else
+	{
+		ScreenMessage(InContextObject, FString::Printf(TEXT("*WRN* %s"), *InMessage), InKey,
+		              settings->Warn.ScreenColor,
+		              InTime);
+	}
 
 	if (bConsoleLog)
 	{
@@ -100,9 +144,16 @@ void ULoggerSubsystem::Error(const UObject* InContextObject, FString InMessage, 
                              bool bConsoleLog)
 {
 	const ULoggerSettings* settings = GetSettings();
-
-	ScreenMessage(InContextObject, FString::Printf(TEXT("*ERR* %s"), *InMessage),
-	              InKey, settings->Error.ScreenColor, InTime);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(InContextObject, EGetWorldErrorMode::ReturnNull))
+	{
+		ScreenMessage(InContextObject, MakeSidePrefix(World) + FString::Printf(TEXT("*ERR* %s"), *InMessage),
+		              InKey, settings->Error.ScreenColor, InTime);
+	}
+	else
+	{
+		ScreenMessage(InContextObject, FString::Printf(TEXT("*ERR* %s"), *InMessage),
+		              InKey, settings->Error.ScreenColor, InTime);
+	}
 
 	if (bConsoleLog)
 	{

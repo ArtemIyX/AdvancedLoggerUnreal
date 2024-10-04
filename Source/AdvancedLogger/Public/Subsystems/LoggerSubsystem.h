@@ -141,6 +141,8 @@ protected:
 	* @see ULoggerSettings
 	*/
 	virtual const class ULoggerSettings* GetSettings() const;
+
+	virtual FString MakeSidePrefix(UWorld* InWorld) const;
 public:
 
 	/**
