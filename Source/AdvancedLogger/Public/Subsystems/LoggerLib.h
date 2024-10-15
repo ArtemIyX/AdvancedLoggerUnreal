@@ -81,7 +81,7 @@
     { \
         GEngine->AddOnScreenDebugMessage(-1,5.0f, FColor::Emerald, Msg); \
     } \
-
+}
 
 #define SCREENDEBUGT(Format, ...) \
 { \
