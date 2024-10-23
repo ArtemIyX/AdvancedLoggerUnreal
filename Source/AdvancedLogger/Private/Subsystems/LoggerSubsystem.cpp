@@ -74,13 +74,14 @@ FString ULoggerLib::MakeSidePrefix(UWorld* InWorld)
 	FString Prefix;
 	if (InWorld)
 	{
+		
 		if (InWorld->WorldType == EWorldType::PIE)
 		{
 			switch (InWorld->GetNetMode())
 			{
 			case NM_Client:
 				// GPlayInEditorID 0 is always the server, so 1 will be first client.
-				Prefix = FString::Printf(TEXT("Client %d: "), static_cast<int32>(GPlayInEditorID));
+				Prefix = FString::Printf(TEXT("Client %d: "), static_cast<int32>(UE::GetPlayInEditorID()));
 				break;
 			case NM_DedicatedServer:
 			case NM_ListenServer:
