@@ -23,7 +23,7 @@ TRACEERROR(YourCategory, "My text with %s and %d", *myString, myInt);
 ```
 > Note that these macros don't work in static functions and in places where GetWorld() can't be obtained
 ### Misc
-If you need to output something to kosnol in a static function use the following:
+If you need to output something to console in a static function use the following:
 ```C++
 TRACESTATIC(YourCategory, "My text with %s and %d", *myString, myInt);
 ```
